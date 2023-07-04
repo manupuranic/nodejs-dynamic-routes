@@ -12,7 +12,6 @@
             <h2><%= product.price %></h2>
             <p><%= product.description %></p>
             <div class="card__actions">
-                                    <a href="/products/<%= product.id %>" class="btn">Details</a>
                                     <form action="/cart" method="POST">
                                         <button class="btn">Add to Cart</button>
                                         <input type="hidden" name="productId" value="<%= product.id %>">

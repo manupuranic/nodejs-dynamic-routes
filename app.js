@@ -7,10 +7,12 @@ const errorController = require("./controllers/error");
 const sequelize = require("./util/database");
 const User = require("./models/user");
 const Product = require("./models/product");
-
-const app = express();
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
+
+const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -34,10 +36,14 @@ app.use(errorController.get404);
 
 Product.belongsTo(User);
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then(() => {
     return User.findByPk(1);
   })
@@ -48,6 +54,9 @@ sequelize
     return user;
   })
   .then((user) => {
+    return user.createCart();
+  })
+  .then((cart) => {
     app.listen(3000);
   })
   .catch((err) => {
